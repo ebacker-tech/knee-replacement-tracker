@@ -219,6 +219,31 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
 .data-preview td{padding:6px 8px;border-bottom:0.5px solid var(--border);color:var(--text-main);white-space:nowrap;}
 .data-preview tr:last-child td{border-bottom:none;}
 
+
+/* calendar tab */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month-label{font-size:16px;font-weight:600;color:var(--text-main);}
+.cal-nav-btn{background:var(--p50);border:0.5px solid var(--border-med);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--p600);font-size:18px;font-family:inherit;}
+.cal-nav-btn:active{background:var(--p100);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;}
+.cal-dow{text-align:center;font-size:10px;font-weight:600;color:var(--text-faint);padding-bottom:4px;text-transform:uppercase;}
+.cal-cell{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:12px;font-weight:500;}
+.cal-cell.empty{background:transparent;cursor:default;}
+.cal-cell.no-log{background:var(--p50);color:var(--text-faint);}
+.cal-cell.today-marker{box-shadow:0 0 0 2px var(--p400);}
+.cal-cell .cal-num{font-size:12px;font-weight:600;line-height:1;}
+.cal-cell .cal-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.7);margin-top:3px;}
+.cal-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted);}
+.cal-legend-swatch{width:16px;height:16px;border-radius:4px;}
+.cal-detail{background:white;border:0.5px solid var(--border);border-radius:14px;padding:14px;min-height:80px;}
+.cal-detail-date{font-size:13px;font-weight:600;color:var(--text-main);margin-bottom:10px;}
+.cal-detail-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
+.cal-detail-row:last-child{border-bottom:none;}
+.cal-detail-label{color:var(--text-muted);}
+.cal-detail-val{font-weight:500;color:var(--text-main);}
+.pain-pill{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:700;color:white;}
+
 .empty-state{text-align:center;color:var(--text-faint);font-size:13px;padding:2rem 0;}
 .mt-12{margin-top:12px;}
 .gap-8{margin-bottom:8px;}
@@ -466,6 +491,32 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div style="height:16px"></div>
     </div>
 
+
+    <!-- CALENDAR SCREEN -->
+    <div class="screen" id="screen-calendar">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrev()">&#8249;</button>
+        <div class="cal-month-label" id="cal-month-label">May 2026</div>
+        <button class="cal-nav-btn" onclick="calNext()">&#8250;</button>
+      </div>
+
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#3B6D11"></div>0–2 low</div>
+        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#BA7517"></div>3–5 moderate</div>
+        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#E24B4A"></div>6–8 high</div>
+        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#A32D2D"></div>9–10 severe</div>
+        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:var(--p50);border:0.5px solid var(--p200)"></div>no log</div>
+      </div>
+
+      <div class="cal-grid" id="cal-grid"></div>
+
+      <div class="section-label">Day detail</div>
+      <div class="cal-detail" id="cal-detail">
+        <div style="text-align:center;color:var(--text-faint);font-size:13px;padding:1rem 0">Tap a day to see details</div>
+      </div>
+      <div style="height:16px"></div>
+    </div>
+
   </div><!-- end content -->
 
   <!-- TAB BAR -->
@@ -493,6 +544,10 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
     <button class="tab-btn" onclick="showScreen('data',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
       <span>Data</span>
+    </button>
+    <button class="tab-btn" onclick="showScreen('calendar',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8" cy="15" r="1.5" fill="currentColor"/><circle cx="12" cy="15" r="1.5" fill="currentColor"/><circle cx="16" cy="15" r="1.5" fill="currentColor"/></svg>
+      <span>Calendar</span>
     </button>
   </div>
 
@@ -530,6 +585,7 @@ function showScreen(s,btn){
   if(s==='summary')renderSummary();
   if(s==='ice')renderIce();
   if(s==='data')renderDataTab();
+  if(s==='calendar')renderCalendar();
 }
 
 /* --- backup --- */
@@ -841,6 +897,79 @@ if(dz){
     reader.readAsText(file);
   });
 }
+
+
+/* --- calendar --- */
+var calYear=new Date().getFullYear();
+var calMonth=new Date().getMonth();
+var calSelected=null;
+
+function painColor(p){return p<=2?'#3B6D11':p<=5?'#BA7517':p<=8?'#E24B4A':'#A32D2D';}
+
+function renderCalendar(){
+  var now=new Date();
+  var firstDay=new Date(calYear,calMonth,1).getDay();
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent=monthNames[calMonth]+' '+calYear;
+
+  var logMap={};
+  data.logs.forEach(function(l){logMap[l.date]=l;});
+
+  var html='<div class="cal-dow">Su</div><div class="cal-dow">Mo</div><div class="cal-dow">Tu</div><div class="cal-dow">We</div><div class="cal-dow">Th</div><div class="cal-dow">Fr</div><div class="cal-dow">Sa</div>';
+
+  for(var i=0;i<firstDay;i++) html+='<div class="cal-cell empty"></div>';
+
+  for(var d=1;d<=daysInMonth;d++){
+    var dateStr=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var log=logMap[dateStr];
+    var isToday=now.getFullYear()===calYear&&now.getMonth()===calMonth&&now.getDate()===d;
+    var isSel=calSelected===dateStr;
+    var bg=log?painColor(log.pain):'var(--p50)';
+    var textColor=log?'white':'var(--text-faint)';
+    var border=isToday?'box-shadow:0 0 0 2.5px var(--p400);':'';
+    var outline=isSel?'outline:2.5px solid white;outline-offset:-3px;':'';
+    html+='<div class="cal-cell" style="background:'+bg+';color:'+textColor+';'+border+outline+'" onclick="calSelect(''+dateStr+'')">';
+    html+='<span class="cal-num">'+d+'</span>';
+    if(log) html+='<div class="cal-dot"></div>';
+    html+='</div>';
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+  if(calSelected) renderCalDetail(calSelected);
+}
+
+function calSelect(dateStr){
+  calSelected=dateStr;
+  renderCalendar();
+  renderCalDetail(dateStr);
+}
+
+function renderCalDetail(dateStr){
+  var logMap={};
+  data.logs.forEach(function(l){logMap[l.date]=l;});
+  var log=logMap[dateStr];
+  var d=new Date(dateStr+'T00:00:00');
+  var ds=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  var el=document.getElementById('cal-detail');
+  if(!log){
+    el.innerHTML='<div class="cal-detail-date">'+ds+'</div><div style="color:var(--text-faint);font-size:13px;padding:8px 0">No log recorded for this day.</div>';
+    return;
+  }
+  var il=data.iceLogs[dateStr]||{ice:0,elev:0};
+  el.innerHTML='<div class="cal-detail-date">'+ds+'</div>'+
+    '<div class="cal-detail-row"><span class="cal-detail-label">Pain</span><span class="pain-pill" style="background:'+painColor(log.pain)+'">'+log.pain+'</span></div>'+
+    '<div class="cal-detail-row"><span class="cal-detail-label">Flexion</span><span class="cal-detail-val">'+log.flexion+'°</span></div>'+
+    '<div class="cal-detail-row"><span class="cal-detail-label">Extension</span><span class="cal-detail-val">'+log.extension+'° deficit</span></div>'+
+    '<div class="cal-detail-row"><span class="cal-detail-label">Steps</span><span class="cal-detail-val">'+Number(log.steps).toLocaleString()+'</span></div>'+
+    '<div class="cal-detail-row"><span class="cal-detail-label">Aid</span><span class="cal-detail-val">'+log.aid+'</span></div>'+
+    '<div class="cal-detail-row"><span class="cal-detail-label">Swelling</span><span class="cal-detail-val">'+log.swelling+'</span></div>'+
+    (log.exercises&&log.exercises.length?'<div class="cal-detail-row"><span class="cal-detail-label">Exercises</span><span class="cal-detail-val" style="text-align:right;max-width:55%">'+log.exercises.join(', ')+'</span></div>':'')+
+    (il.ice||il.elev?'<div class="cal-detail-row"><span class="cal-detail-label">Ice / Elev</span><span class="cal-detail-val">'+il.ice+'× / '+il.elev+'×</span></div>':'')+
+    (log.notes?'<div class="cal-detail-row"><span class="cal-detail-label">Notes</span><span class="cal-detail-val" style="text-align:right;max-width:60%;font-style:italic">'+log.notes+'</span></div>':'');
+}
+
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
 
 /* init */
 buildPainDots();
