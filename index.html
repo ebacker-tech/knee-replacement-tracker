@@ -423,7 +423,7 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div style="height:16px"></div>
     </div>
 
-    <!-- SUMMARY SCREEN -->
+    <!-- SUMMARY SCREEN (includes calendar) -->
     <div class="screen" id="screen-summary">
       <div class="section-label">Overall progress</div>
       <div class="metrics-grid">
@@ -443,6 +443,28 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div class="card">
         <div class="chart-bars" id="pain-bars"></div>
         <div class="chart-labels" id="pain-labels"></div>
+      </div>
+
+      <div class="section-label">Pain calendar</div>
+      <div class="card" style="padding:14px">
+        <div class="cal-nav" style="margin-bottom:12px">
+          <button class="cal-nav-btn" onclick="calPrev()">&#8249;</button>
+          <div class="cal-month-label" id="cal-month-label">May 2026</div>
+          <button class="cal-nav-btn" onclick="calNext()">&#8250;</button>
+        </div>
+        <div class="cal-legend" style="margin-bottom:12px">
+          <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#3B6D11"></div>0–2</div>
+          <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#BA7517"></div>3–5</div>
+          <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#E24B4A"></div>6–8</div>
+          <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#A32D2D"></div>9–10</div>
+          <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:var(--p50);border:0.5px solid var(--p200)"></div>none</div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <div class="section-label">Day detail</div>
+      <div class="cal-detail" id="cal-detail">
+        <div style="text-align:center;color:var(--text-faint);font-size:13px;padding:1rem 0">Tap a day to see details</div>
       </div>
       <div style="height:16px"></div>
     </div>
@@ -492,31 +514,6 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
     </div>
 
 
-    <!-- CALENDAR SCREEN -->
-    <div class="screen" id="screen-calendar">
-      <div class="cal-nav">
-        <button class="cal-nav-btn" onclick="calPrev()">&#8249;</button>
-        <div class="cal-month-label" id="cal-month-label">May 2026</div>
-        <button class="cal-nav-btn" onclick="calNext()">&#8250;</button>
-      </div>
-
-      <div class="cal-legend">
-        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#3B6D11"></div>0–2 low</div>
-        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#BA7517"></div>3–5 moderate</div>
-        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#E24B4A"></div>6–8 high</div>
-        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:#A32D2D"></div>9–10 severe</div>
-        <div class="cal-legend-item"><div class="cal-legend-swatch" style="background:var(--p50);border:0.5px solid var(--p200)"></div>no log</div>
-      </div>
-
-      <div class="cal-grid" id="cal-grid"></div>
-
-      <div class="section-label">Day detail</div>
-      <div class="cal-detail" id="cal-detail">
-        <div style="text-align:center;color:var(--text-faint);font-size:13px;padding:1rem 0">Tap a day to see details</div>
-      </div>
-      <div style="height:16px"></div>
-    </div>
-
   </div><!-- end content -->
 
   <!-- TAB BAR -->
@@ -544,10 +541,6 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
     <button class="tab-btn" onclick="showScreen('data',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
       <span>Data</span>
-    </button>
-    <button class="tab-btn" onclick="showScreen('calendar',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="8" cy="15" r="1.5" fill="currentColor"/><circle cx="12" cy="15" r="1.5" fill="currentColor"/><circle cx="16" cy="15" r="1.5" fill="currentColor"/></svg>
-      <span>Calendar</span>
     </button>
   </div>
 
@@ -582,10 +575,9 @@ function showScreen(s,btn){
   updateBanner();
   if(s==='pt')renderPT();
   if(s==='history'){renderHistory();renderMilestones();}
-  if(s==='summary')renderSummary();
+  if(s==='summary'){renderSummary();renderCalendar();}
   if(s==='ice')renderIce();
   if(s==='data')renderDataTab();
-  if(s==='calendar')renderCalendar();
 }
 
 /* --- backup --- */
@@ -929,7 +921,7 @@ function renderCalendar(){
     var textColor=log?'white':'var(--text-faint)';
     var border=isToday?'box-shadow:0 0 0 2.5px var(--p400);':'';
     var outline=isSel?'outline:2.5px solid white;outline-offset:-3px;':'';
-    html+='<div class="cal-cell" style="background:'+bg+';color:'+textColor+';'+border+outline+'" onclick="calSelect(''+dateStr+'')">';
+    html+='<div class="cal-cell" style="background:'+bg+';color:'+textColor+';'+border+outline+'" onclick="calSelect(\''+dateStr+'\')">';
     html+='<span class="cal-num">'+d+'</span>';
     if(log) html+='<div class="cal-dot"></div>';
     html+='</div>';
