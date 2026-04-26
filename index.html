@@ -117,7 +117,6 @@ textarea{resize:vertical;min-height:72px;line-height:1.5;}
 .btn-primary:active{opacity:0.85;}
 .btn-secondary{width:100%;padding:11px;background:var(--p50);border:0.5px solid var(--border-med);border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--p700);transition:background 0.15s;}
 .btn-secondary:active{background:var(--p100);}
-.btn-danger{width:100%;padding:11px;background:#FCEBEB;border:0.5px solid #F7C1C1;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;color:#A32D2D;}
 
 /* toggle */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -185,7 +184,6 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
 .add-row input{flex:1;}
 .add-btn{padding:9px 14px;background:var(--p50);border:0.5px solid var(--border-med);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--p700);font-weight:500;white-space:nowrap;}
 
-.today-reminders{margin-bottom:16px;}
 .rc{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:500;margin:3px;}
 .rc-done{background:#EAF3DE;color:#3B6D11;}
 .rc-next{background:var(--p100);color:var(--p800);border:1.5px solid var(--p400);}
@@ -297,19 +295,6 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
         <div class="pain-grid" id="pain-dots"></div>
       </div>
 
-      <div class="section-label">Range of motion</div>
-      <div class="card">
-        <div class="field-row">
-          <span class="field-label">Flexion</span>
-          <input type="range" min="0" max="150" value="60" id="flexion-slider" oninput="document.getElementById('flexion-val').textContent=this.value">
-          <span class="field-val" id="flexion-val">60</span><span style="font-size:12px;color:var(--text-faint);margin-left:2px">°</span>
-        </div>
-        <div class="field-row" style="margin-bottom:0">
-          <span class="field-label">Extension</span>
-          <input type="range" min="0" max="20" value="5" id="extension-slider" oninput="document.getElementById('extension-val').textContent=this.value">
-          <span class="field-val" id="extension-val">5</span><span style="font-size:12px;color:var(--text-faint);margin-left:2px">° deficit</span>
-        </div>
-      </div>
 
       <div class="section-label">Walking</div>
       <div class="card">
@@ -328,11 +313,16 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div class="card">
         <div class="check-grid" id="exercise-checks">
           <label class="check-item"><input type="checkbox" value="Ankle pumps"> Ankle pumps</label>
-          <label class="check-item"><input type="checkbox" value="Quad sets"> Quad sets</label>
-          <label class="check-item"><input type="checkbox" value="Heel slides"> Heel slides</label>
-          <label class="check-item"><input type="checkbox" value="Straight leg raises"> Straight leg raises</label>
+          <label class="check-item"><input type="checkbox" value="Bicycling"> Bicycling</label>
+          <label class="check-item"><input type="checkbox" value="Glutes machine"> Glutes machine</label>
+          <label class="check-item"><input type="checkbox" value="Quad machine"> Quad machine</label>
+          <label class="check-item"><input type="checkbox" value="Hamstring machine"> Hamstring machine</label>
           <label class="check-item"><input type="checkbox" value="Short arc quads"> Short arc quads</label>
-          <label class="check-item"><input type="checkbox" value="Knee bends"> Standing knee bends</label>
+          <label class="check-item"><input type="checkbox" value="Bridging"> Bridging</label>
+          <label class="check-item"><input type="checkbox" value="Heel slides"> Heel slides</label>
+          <label class="check-item"><input type="checkbox" value="Prone knee flexion"> Prone knee flexion</label>
+          <label class="check-item"><input type="checkbox" value="Long arc quads"> Long arc quads</label>
+          <label class="check-item"><input type="checkbox" value="Heel and toe raises"> Heel and toe raises</label>
         </div>
       </div>
 
@@ -375,44 +365,6 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div style="height:16px"></div>
     </div>
 
-    <!-- ICE SCREEN -->
-    <div class="screen" id="screen-ice">
-      <div class="section-label">Today's schedule</div>
-      <div class="today-reminders" id="today-reminders"></div>
-
-      <div class="section-label">Ice schedule</div>
-      <div class="card">
-        <div class="toggle-row"><span class="toggle-label">Ice reminders</span><label class="toggle"><input type="checkbox" id="ice-toggle" onchange="saveReminders()" checked><span class="tog-slider"></span></label></div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">20 min on, 40 min off. Ice 4–6× daily, especially the first 2 weeks.</div>
-        <div class="reminder-chips" id="ice-times-display"></div>
-        <div class="add-row"><input type="time" id="new-ice-time" value="08:00"><button class="add-btn" onclick="addIceTime()">+ Add</button></div>
-      </div>
-
-      <div class="section-label">Elevation schedule</div>
-      <div class="card">
-        <div class="toggle-row"><span class="toggle-label">Elevation reminders</span><label class="toggle"><input type="checkbox" id="elev-toggle" onchange="saveReminders()" checked><span class="tog-slider"></span></label></div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">Leg above heart level, 2–3 hrs, 3–4× daily to reduce swelling.</div>
-        <div class="reminder-chips" id="elev-times-display"></div>
-        <div class="add-row"><input type="time" id="new-elev-time" value="10:00"><button class="add-btn" onclick="addElevTime()">+ Add</button></div>
-      </div>
-
-      <div class="section-label">Log today's sessions</div>
-      <div class="card">
-        <div class="field-row">
-          <span class="field-label">Ice sessions</span>
-          <input type="range" min="0" max="8" step="1" value="0" id="ice-sessions" oninput="document.getElementById('ice-sessions-val').textContent=this.value">
-          <span class="field-val" id="ice-sessions-val">0</span>
-        </div>
-        <div class="field-row" style="margin-bottom:0">
-          <span class="field-label">Elevation sessions</span>
-          <input type="range" min="0" max="6" step="1" value="0" id="elev-sessions" oninput="document.getElementById('elev-sessions-val').textContent=this.value">
-          <span class="field-val" id="elev-sessions-val">0</span>
-        </div>
-        <button class="btn-primary" onclick="saveIceLog()">Save ice & elevation log</button>
-      </div>
-      <div style="height:16px"></div>
-    </div>
-
     <!-- HISTORY SCREEN -->
     <div class="screen" id="screen-history">
       <div class="section-label">Recent logs</div>
@@ -429,15 +381,9 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div class="metrics-grid">
         <div class="metric-card"><div class="metric-label">Days logged</div><div class="metric-value" id="sm-days">0</div></div>
         <div class="metric-card"><div class="metric-label">Avg pain</div><div class="metric-value" id="sm-pain">—</div></div>
-        <div class="metric-card"><div class="metric-label">Best flexion</div><div class="metric-value" id="sm-flex">—</div><div class="metric-sub">goal: 120°</div></div>
         <div class="metric-card"><div class="metric-label">Best step day</div><div class="metric-value" id="sm-steps">—</div></div>
       </div>
 
-      <div class="section-label">Flexion progress</div>
-      <div class="card">
-        <div class="chart-bars" id="flex-bars"></div>
-        <div class="chart-labels" id="flex-labels"></div>
-      </div>
 
       <div class="section-label">Pain trend</div>
       <div class="card">
@@ -475,19 +421,11 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div class="card" style="padding:8px 16px"><div id="data-stats"></div></div>
 
       <div class="section-label mt-12">Export</div>
-      <div class="data-grid">
-        <div class="data-card">
-          <h4>Daily logs</h4>
-          <p>Pain, flexion, steps, exercises, ice/elev, notes.</p>
-          <button class="btn-secondary" onclick="exportCSV('logs')">Download logs.csv</button>
-        </div>
-        <div class="data-card">
-          <h4>PT appointments</h4>
-          <p>All appointments with dates, times, notes.</p>
-          <button class="btn-secondary" onclick="exportCSV('pt')">Download appts.csv</button>
-        </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:500;color:var(--text-main);margin-bottom:5px">Full CSV export</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Exports all logged days including pain, steps, aid, swelling, exercises, and notes — plus all PT appointments — in a single file.</div>
+        <button class="btn-primary" onclick="exportCSV('full')">Download knee-recovery.csv</button>
       </div>
-      <button class="btn-secondary gap-8" onclick="exportCSV('all')">Download full backup (JSON)</button>
 
       <div class="section-label mt-12">Import</div>
       <div class="card">
@@ -504,12 +442,7 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div class="section-label mt-12">Preview</div>
       <div class="card" style="padding:10px"><div class="data-preview" id="data-preview"></div></div>
 
-      <div class="section-label mt-12" style="color:#A32D2D">Danger zone</div>
-      <div class="card" style="border-color:#F7C1C1">
-        <div style="font-size:13px;font-weight:500;color:var(--text-main);margin-bottom:4px">Clear all data</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Permanently deletes all logs and settings. Export a backup first.</div>
-        <button class="btn-danger" onclick="clearAll()">Clear all data</button>
-      </div>
+
       <div style="height:16px"></div>
     </div>
 
@@ -525,10 +458,6 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
     <button class="tab-btn" onclick="showScreen('pt',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
       <span>PT</span>
-    </button>
-    <button class="tab-btn" onclick="showScreen('ice',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6.3 6.3l11.4 11.4M17.7 6.3L6.3 17.7"/></svg>
-      <span>Ice</span>
     </button>
     <button class="tab-btn" onclick="showScreen('history',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-8"/></svg>
@@ -576,7 +505,6 @@ function showScreen(s,btn){
   if(s==='pt')renderPT();
   if(s==='history'){renderHistory();renderMilestones();}
   if(s==='summary'){renderSummary();renderCalendar();}
-  if(s==='ice')renderIce();
   if(s==='data')renderDataTab();
 }
 
@@ -649,7 +577,7 @@ function saveLog(){
   document.querySelectorAll('#exercise-checks input:checked').forEach(function(el){exercises.push(el.value);});
   var td=new Date().toISOString().split('T')[0];
   var il=data.iceLogs[td]||{ice:0,elev:0};
-  var log={date:td,pain:selectedPain,flexion:+document.getElementById('flexion-slider').value,extension:+document.getElementById('extension-slider').value,steps:+document.getElementById('steps-slider').value,aid:document.getElementById('aid-select').value,swelling:document.getElementById('swelling-select').value,exercises:exercises,notes:document.getElementById('notes-input').value,iceSessions:il.ice,elevSessions:il.elev};
+  var log={date:td,pain:selectedPain,flexion:0,extension:0,steps:+document.getElementById('steps-slider').value,aid:document.getElementById('aid-select').value,swelling:document.getElementById('swelling-select').value,exercises:exercises,notes:document.getElementById('notes-input').value,iceSessions:il.ice,elevSessions:il.elev};
   var idx=data.logs.findIndex(function(l){return l.date===log.date;});
   if(idx>=0)data.logs[idx]=log;else data.logs.unshift(log);
   save();updateBanner();alert('Log saved!');
@@ -683,40 +611,6 @@ function renderPT(){
   document.getElementById('pt-past').innerHTML=past.length?past.slice().reverse().map(function(p){return html(p,true);}).join(''):'<div class="empty-state">No past appointments.</div>';
 }
 
-/* --- ice --- */
-function renderIce(){
-  var r=data.reminders;
-  document.getElementById('ice-toggle').checked=r.iceOn;
-  document.getElementById('elev-toggle').checked=r.elevOn;
-  renderTimes('ice-times-display',r.iceTimes,'ice');
-  renderTimes('elev-times-display',r.elevTimes,'elev');
-  renderTodayReminders();
-  var td=new Date().toISOString().split('T')[0],il=data.iceLogs[td]||{ice:0,elev:0};
-  document.getElementById('ice-sessions').value=il.ice;document.getElementById('ice-sessions-val').textContent=il.ice;
-  document.getElementById('elev-sessions').value=il.elev;document.getElementById('elev-sessions-val').textContent=il.elev;
-}
-function renderTimes(elId,times,type){
-  document.getElementById(elId).innerHTML=times.map(function(t,i){return '<div class="time-chip">'+fmtTime(t)+'<button onclick="removeTime(\''+type+'\','+i+')">×</button></div>';}).join('');
-}
-function renderTodayReminders(){
-  var el=document.getElementById('today-reminders');
-  var now=new Date(),nowMin=now.getHours()*60+now.getMinutes(),r=data.reminders,items=[];
-  if(r.iceOn)r.iceTimes.forEach(function(t){items.push({time:t,label:'Ice 20 min'});});
-  if(r.elevOn)r.elevTimes.forEach(function(t){items.push({time:t,label:'Elevate leg'});});
-  items.sort(function(a,b){return a.time.localeCompare(b.time);});
-  if(!items.length){el.innerHTML='<div class="empty-state">No reminders set.</div>';return;}
-  el.innerHTML='<div>'+items.map(function(item){
-    var p=item.time.split(':'),im=+p[0]*60+ +p[1],cls,ind;
-    if(im<nowMin-30){cls='rc-done';ind='✓';}else if(im<=nowMin+60){cls='rc-next';ind='→';}else{cls='rc-pending';ind='○';}
-    return '<span class="rc '+cls+'">'+ind+' '+fmtTime(item.time)+' — '+item.label+'</span>';
-  }).join('')+'</div>';
-}
-function addIceTime(){var t=document.getElementById('new-ice-time').value;if(!t)return;if(data.reminders.iceTimes.indexOf(t)===-1){data.reminders.iceTimes.push(t);data.reminders.iceTimes.sort();save();}renderIce();}
-function addElevTime(){var t=document.getElementById('new-elev-time').value;if(!t)return;if(data.reminders.elevTimes.indexOf(t)===-1){data.reminders.elevTimes.push(t);data.reminders.elevTimes.sort();save();}renderIce();}
-function removeTime(type,idx){if(type==='ice')data.reminders.iceTimes.splice(idx,1);else data.reminders.elevTimes.splice(idx,1);save();renderIce();}
-function saveReminders(){data.reminders.iceOn=document.getElementById('ice-toggle').checked;data.reminders.elevOn=document.getElementById('elev-toggle').checked;save();renderTodayReminders();}
-function saveIceLog(){var td=new Date().toISOString().split('T')[0];data.iceLogs[td]={ice:+document.getElementById('ice-sessions').value,elev:+document.getElementById('elev-sessions').value};save();alert('Ice & elevation log saved!');}
-
 /* --- history --- */
 function renderHistory(){
   var c=document.getElementById('history-list');
@@ -725,19 +619,16 @@ function renderHistory(){
     var d=new Date(l.date+'T00:00:00');
     var ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
     var il=data.iceLogs[l.date];
-    var iceInfo=il?' · Ice ×'+il.ice+' Elev ×'+il.elev:'';
-    return '<div class="history-item"><div><div class="history-date">'+ds+'</div><div class="history-meta">'+l.exercises.length+' exercises · '+l.swelling+' swelling'+iceInfo+'</div>'+(l.notes?'<div class="history-note">'+l.notes+'</div>':'')+'</div><div class="h-stats"><div class="h-stat"><span class="pain-badge" style="background:'+painColor(l.pain)+'">'+l.pain+'</span><span class="h-stat-lbl">pain</span></div><div class="h-stat"><span class="h-stat-val">'+l.flexion+'°</span><span class="h-stat-lbl">flex</span></div><div class="h-stat"><span class="h-stat-val">'+Number(l.steps).toLocaleString()+'</span><span class="h-stat-lbl">steps</span></div></div></div>';
+    var iceInfo='';
+    return '<div class="history-item"><div><div class="history-date">'+ds+'</div><div class="history-meta">'+l.exercises.length+' exercises · '+l.swelling+' swelling'+iceInfo+'</div>'+(l.notes?'<div class="history-note">'+l.notes+'</div>':'')+'</div><div class="h-stats"><div class="h-stat"><span class="pain-badge" style="background:'+painColor(l.pain)+'">'+l.pain+'</span><span class="h-stat-lbl">pain</span></div><div class="h-stat"><span class="h-stat-val">'+Number(l.steps).toLocaleString()+'</span><span class="h-stat-lbl">steps</span></div></div></div>';
   }).join('');
 }
 
 var milestones=[
   {name:'Walk without walker/crutches',week:'Week 2–3',check:function(d){return d.aid==='Cane'||d.aid==='No aid';}},
-  {name:'Flexion reaches 90°',week:'Week 3–4',check:function(d){return d.flexion>=90;}},
   {name:'Walk ≥ 2,000 steps',week:'Week 3–4',check:function(d){return d.steps>=2000;}},
   {name:'Climb stairs independently',week:'Week 4–6',check:function(){return false;}},
-  {name:'Flexion reaches 110°',week:'Week 6–8',check:function(d){return d.flexion>=110;}},
   {name:'Walk without any aid',week:'Week 6+',check:function(d){return d.aid==='No aid';}},
-  {name:'Flexion reaches 120°+',week:'Week 8–12',check:function(d){return d.flexion>=120;}},
   {name:'Pain consistently ≤ 3',week:'Week 8+',check:function(d){return d.pain<=3;}},
 ];
 function renderMilestones(){
@@ -753,14 +644,11 @@ function renderSummary(){
   document.getElementById('sm-days').textContent=logs.length;
   if(logs.length){
     document.getElementById('sm-pain').textContent=(logs.reduce(function(a,l){return a+l.pain;},0)/logs.length).toFixed(1);
-    document.getElementById('sm-flex').textContent=Math.max.apply(null,logs.map(function(l){return l.flexion;}))+'°';
     document.getElementById('sm-steps').textContent=Number(Math.max.apply(null,logs.map(function(l){return l.steps;}))).toLocaleString();
   }
   var recent=logs.slice().reverse().slice(-7);
-  var fb=document.getElementById('flex-bars'),pb=document.getElementById('pain-bars');
-  if(!recent.length){fb.innerHTML='<div class="empty-state" style="width:100%">Log some days to see trends</div>';pb.innerHTML='';return;}
-  fb.innerHTML=recent.map(function(l){return '<div class="bar" style="height:'+Math.round(l.flexion/150*90)+'px;background:var(--p400);opacity:0.9"></div>';}).join('');
-  document.getElementById('flex-labels').innerHTML=recent.map(function(l){var d=new Date(l.date+'T00:00:00');return '<div class="chart-label">'+(d.getMonth()+1)+'/'+d.getDate()+'</div>';}).join('');
+  var pb=document.getElementById('pain-bars');
+  if(!recent.length){pb.innerHTML='<div class="empty-state" style="width:100%">Log some days to see trends</div>';return;}
   pb.innerHTML=recent.map(function(l){return '<div class="bar" style="height:'+Math.max(Math.round(l.pain/10*90),4)+'px;background:'+painColor(l.pain)+';opacity:0.85"></div>';}).join('');
   document.getElementById('pain-labels').innerHTML=recent.map(function(l){var d=new Date(l.date+'T00:00:00');return '<div class="chart-label">'+(d.getMonth()+1)+'/'+d.getDate()+'</div>';}).join('');
 }
@@ -769,13 +657,11 @@ function renderSummary(){
 var LOG_HEADERS=['date','pain','flexion','extension','steps','aid','swelling','iceSessions','elevSessions','exercises','notes'];
 
 function renderDataTab(){
-  var iceCount=Object.keys(data.iceLogs).length;
   var days=daysSince();
   var lastStr=days===null?'Never':(days===0?'Today':days+' day'+(days!==1?'s':'')+' ago');
   document.getElementById('data-stats').innerHTML=[
     {l:'Daily logs',v:data.logs.length+' entries'},
     {l:'PT appointments',v:data.pt.length+' appointments'},
-    {l:'Ice/elev days logged',v:iceCount+' days'},
     {l:'Surgery date',v:'May 5, 2026'},
     {l:'Last log',v:data.logs.length?new Date(data.logs[0].date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—'},
     {l:'Last CSV export',v:lastStr,warn:days===null||days>=BACKUP_DAYS},
@@ -791,7 +677,7 @@ function renderPreview(){
   var h=['Date','Pain','Flex','Steps','Aid','Notes'];
   var thead='<tr>'+h.map(function(hh){return '<th>'+hh+'</th>';}).join('')+'</tr>';
   var tbody=logs.map(function(l){
-    return '<tr>'+[l.date,l.pain,l.flexion+'°',Number(l.steps).toLocaleString(),l.aid,(l.notes||'').slice(0,20)+(l.notes&&l.notes.length>20?'…':'')].map(function(v){return '<td>'+v+'</td>';}).join('')+'</tr>';
+    return '<tr>'+[l.date,l.pain,Number(l.steps).toLocaleString(),l.aid,(l.notes||'').slice(0,20)+(l.notes&&l.notes.length>20?'…':'')].map(function(v){return '<td>'+v+'</td>';}).join('')+'</tr>';
   }).join('');
   document.getElementById('data-preview').innerHTML='<table><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>';
 }
@@ -809,6 +695,19 @@ function ptCSV(){
   data.pt.forEach(function(p){rows.push([p.id,'"'+p.label+'"',p.date,p.time||'','"'+(p.notes||'').replace(/"/g,'""')+'"'].join(','));});
   return rows.join('\n');
 }
+function fullCSV(){
+  var rows=['--- DAILY LOGS ---'];
+  rows.push(LOG_HEADERS.join(','));
+  data.logs.forEach(function(l){
+    var il=data.iceLogs[l.date]||{ice:0,elev:0};
+    rows.push([l.date,l.pain,l.flexion,l.extension,l.steps,'"'+l.aid+'"','"'+l.swelling+'"',il.ice,il.elev,'"'+(l.exercises||[]).join(';')+'"','"'+(l.notes||'').replace(/"/g,'""')+'"'].join(','));
+  });
+  rows.push('');
+  rows.push('--- PT APPOINTMENTS ---');
+  rows.push(['label','date','time','notes'].join(','));
+  data.pt.forEach(function(p){rows.push(['"'+p.label+'"',p.date,p.time||'','"'+(p.notes||'').replace(/"/g,'""')+'"'].join(','));});
+  return rows.join('\n');
+}
 function dl(content,filename,mime){
   var blob=new Blob([content],{type:mime});
   var url=URL.createObjectURL(blob);
@@ -820,6 +719,10 @@ function exportCSV(type){
   if(type==='logs'){if(!data.logs.length){alert('No logs yet.');return;}dl(logsCSV(),'knee-recovery-logs.csv','text/csv');setLastExport();updateBanner();renderDataTab();}
   else if(type==='pt'){if(!data.pt.length){alert('No appointments yet.');return;}dl(ptCSV(),'knee-appointments.csv','text/csv');}
   else if(type==='all'){dl(JSON.stringify(data,null,2),'knee-recovery-backup.json','application/json');setLastExport();updateBanner();renderDataTab();}
+  else if(type==='full'){
+    if(!data.logs.length&&!data.pt.length){alert('No data to export yet.');return;}
+    dl(fullCSV(),'knee-recovery.csv','text/csv');setLastExport();updateBanner();renderDataTab();
+  }
 }
 function handleFile(input){
   var file=input.files[0];if(!file)return;
@@ -868,12 +771,6 @@ function parseCSVLine(line){
     else{cur+=c;}
   }
   result.push(cur);return result;
-}
-function clearAll(){
-  if(!confirm('Delete all data? Export a backup first.'))return;
-  data={logs:[],pt:[],reminders:{iceOn:true,elevOn:true,iceTimes:['08:00','12:00','16:00','20:00'],elevTimes:['09:00','13:00','18:00']},iceLogs:{}};
-  localStorage.removeItem('kneeLastExport');
-  save();renderDataTab();updateBanner();alert('All data cleared.');
 }
 
 /* drag and drop */
@@ -950,7 +847,6 @@ function renderCalDetail(dateStr){
   var il=data.iceLogs[dateStr]||{ice:0,elev:0};
   el.innerHTML='<div class="cal-detail-date">'+ds+'</div>'+
     '<div class="cal-detail-row"><span class="cal-detail-label">Pain</span><span class="pain-pill" style="background:'+painColor(log.pain)+'">'+log.pain+'</span></div>'+
-    '<div class="cal-detail-row"><span class="cal-detail-label">Flexion</span><span class="cal-detail-val">'+log.flexion+'°</span></div>'+
     '<div class="cal-detail-row"><span class="cal-detail-label">Extension</span><span class="cal-detail-val">'+log.extension+'° deficit</span></div>'+
     '<div class="cal-detail-row"><span class="cal-detail-label">Steps</span><span class="cal-detail-val">'+Number(log.steps).toLocaleString()+'</span></div>'+
     '<div class="cal-detail-row"><span class="cal-detail-label">Aid</span><span class="cal-detail-val">'+log.aid+'</span></div>'+
@@ -966,7 +862,6 @@ function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalend
 /* init */
 buildPainDots();
 updateSurgeryInfo();
-renderTodayReminders();
 updateBanner();
 </script>
 </body>
