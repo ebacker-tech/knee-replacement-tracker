@@ -285,9 +285,16 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
     <!-- LOG SCREEN -->
     <div class="screen active" id="screen-log">
       <div class="week-pill" id="week-display">Week 1 of recovery</div>
-      <div class="surg-bar">
-        <div class="surg-item"><div class="sl">Surgery date</div><div class="sv">May 5, 2026</div></div>
+      <div class="surg-bar" id="surg-bar-display">
+        <div class="surg-item"><div class="sl">Surgery date</div><div class="sv" id="surg-date-display" onclick="editSurgeryDate()" style="cursor:pointer">Not set <span style="font-size:11px;color:var(--p500);font-weight:400">Edit</span></div></div>
         <div class="surg-item" style="text-align:right"><div class="sl">Days until</div><div class="sv" id="days-until">—</div></div>
+      </div>
+      <div id="surg-bar-setup" style="display:none;background:var(--p100);border:0.5px solid var(--p200);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:600;color:var(--p800);margin-bottom:8px">Set your surgery date</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="date" id="surgery-date-input" style="flex:1;background:white">
+          <button onclick="saveSurgeryDate()" style="padding:9px 16px;background:var(--p600);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">Save</button>
+        </div>
       </div>
 
       <div class="section-label">Pain level</div>
@@ -476,7 +483,7 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
 </div><!-- end app-shell -->
 
 <script>
-var SURGERY='2026-05-05';
+var SURGERY=localStorage.getItem('kneeSurgeryDate')||'';
 var BACKUP_DAYS=7;
 var data=JSON.parse(localStorage.getItem('kneeRecovery')||'null')||{logs:[],pt:[],reminders:{iceOn:true,elevOn:true,iceTimes:['08:00','12:00','16:00','20:00'],elevTimes:['09:00','13:00','18:00']},iceLogs:{}};
 var selectedPain=3;
@@ -536,7 +543,39 @@ function quickExport(){
 }
 
 /* --- surgery info --- */
+function fmtSurgeryDate(dateStr){
+  if(!dateStr)return'Not set';
+  var d=new Date(dateStr+'T00:00:00');
+  return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+}
+function editSurgeryDate(){
+  document.getElementById('surg-bar-display').style.display='none';
+  var setup=document.getElementById('surg-bar-setup');
+  setup.style.display='block';
+  if(SURGERY)document.getElementById('surgery-date-input').value=SURGERY;
+}
+function saveSurgeryDate(){
+  var val=document.getElementById('surgery-date-input').value;
+  if(!val){alert('Please pick a date.');return;}
+  SURGERY=val;
+  localStorage.setItem('kneeSurgeryDate',val);
+  document.getElementById('surg-bar-setup').style.display='none';
+  document.getElementById('surg-bar-display').style.display='flex';
+  updateSurgeryInfo();
+}
 function updateSurgeryInfo(){
+  var display=document.getElementById('surg-bar-display');
+  var setup=document.getElementById('surg-bar-setup');
+  if(!SURGERY){
+    display.style.display='none';
+    setup.style.display='block';
+    document.getElementById('week-display').textContent='Set your surgery date below';
+    document.getElementById('header-sub').textContent='Tap to set up';
+    return;
+  }
+  display.style.display='flex';
+  setup.style.display='none';
+  document.getElementById('surg-date-display').textContent=fmtSurgeryDate(SURGERY);
   var now=new Date(),surg=new Date(SURGERY+'T00:00:00');
   var diff=Math.ceil((surg-now)/86400000);
   var weekEl=document.getElementById('week-display');
@@ -545,7 +584,7 @@ function updateSurgeryInfo(){
     document.getElementById('days-until').textContent=diff+' day'+(diff!==1?'s':'');
     weekEl.textContent='Surgery in '+diff+' day'+(diff!==1?'s':'');
     weekEl.style.cssText='background:#FAEEDA;color:#854F0B;border-color:#EF9F27';
-    sub.textContent='Surgery on May 5, 2026';
+    sub.textContent='Surgery on '+fmtSurgeryDate(SURGERY);
   } else {
     document.getElementById('days-until').textContent='Passed';
     var wk=Math.max(1,Math.ceil((now-surg)/(7*86400000)));
@@ -662,7 +701,7 @@ function renderDataTab(){
   document.getElementById('data-stats').innerHTML=[
     {l:'Daily logs',v:data.logs.length+' entries'},
     {l:'PT appointments',v:data.pt.length+' appointments'},
-    {l:'Surgery date',v:'May 5, 2026'},
+    {l:'Surgery date',v:SURGERY?fmtSurgeryDate(SURGERY):'Not set'},
     {l:'Last log',v:data.logs.length?new Date(data.logs[0].date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—'},
     {l:'Last CSV export',v:lastStr,warn:days===null||days>=BACKUP_DAYS},
   ].map(function(s){
