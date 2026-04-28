@@ -307,8 +307,7 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
       <div class="card">
         <div class="field-row">
           <span class="field-label">Steps today</span>
-          <input type="range" min="0" max="10000" step="100" value="1000" id="steps-slider" oninput="document.getElementById('steps-val').textContent=Number(this.value).toLocaleString()">
-          <span class="field-val" id="steps-val" style="min-width:44px">1,000</span>
+          <input type="number" id="steps-input" min="0" max="99999" placeholder="0" style="flex:1;text-align:right;font-size:16px;font-weight:600;color:var(--text-main)">
         </div>
         <div class="field-row" style="margin-bottom:0">
           <span class="field-label">Aid used</span>
@@ -616,7 +615,7 @@ function saveLog(){
   document.querySelectorAll('#exercise-checks input:checked').forEach(function(el){exercises.push(el.value);});
   var td=new Date().toISOString().split('T')[0];
   var il=data.iceLogs[td]||{ice:0,elev:0};
-  var log={date:td,pain:selectedPain,flexion:0,extension:0,steps:+document.getElementById('steps-slider').value,aid:document.getElementById('aid-select').value,swelling:document.getElementById('swelling-select').value,exercises:exercises,notes:document.getElementById('notes-input').value,iceSessions:il.ice,elevSessions:il.elev};
+  var log={date:td,pain:selectedPain,flexion:0,extension:0,steps:+document.getElementById('steps-input').value||0,aid:document.getElementById('aid-select').value,swelling:document.getElementById('swelling-select').value,exercises:exercises,notes:document.getElementById('notes-input').value,iceSessions:il.ice,elevSessions:il.elev};
   var idx=data.logs.findIndex(function(l){return l.date===log.date;});
   if(idx>=0)data.logs[idx]=log;else data.logs.unshift(log);
   save();updateBanner();alert('Log saved!');
