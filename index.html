@@ -137,6 +137,26 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
 
 /* history items */
 .history-item{background:white;border:0.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;}
+/* edit log modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;align-items:flex-end;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:white;border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);width:100%;max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.modal-handle{width:36px;height:4px;background:var(--p200);border-radius:2px;margin:12px auto 0;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;}
+.modal-title{font-size:16px;font-weight:600;color:var(--text-main);}
+.modal-close{background:var(--p50);border:none;border-radius:50%;width:30px;height:30px;font-size:18px;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.modal-body{padding:14px 16px;}
+.modal-field{margin-bottom:14px;}
+.modal-field label{font-size:12px;font-weight:500;color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px;}
+.btn-delete{padding:12px;background:#FCEBEB;color:#A32D2D;border:0.5px solid #F7C1C1;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.edit-pain-grid{display:flex;gap:5px;flex-wrap:wrap;}
+.edit-pain-dot{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--p300);background:transparent;cursor:pointer;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-family:inherit;transition:all 0.1s;}
+.edit-pain-dot.active{color:white;border-color:transparent;}
+.edit-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.history-item{cursor:pointer;}
+.history-item:active{opacity:0.75;}
+
 .history-date{font-size:13px;font-weight:600;color:var(--text-main);}
 .history-meta{font-size:11px;color:var(--text-muted);margin-top:3px;}
 .history-note{font-size:11px;color:var(--text-muted);margin-top:4px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -453,6 +473,51 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
     </div>
 
 
+
+  <!-- EDIT LOG MODAL -->
+  <div class="modal-overlay" id="edit-modal" onclick="closeEditModal(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title" id="edit-modal-title">Edit log</div>
+        <button class="modal-close" onclick="closeEditModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label>Pain level</label>
+          <div class="edit-pain-grid" id="edit-pain-dots"></div>
+        </div>
+        <div class="modal-field">
+          <label>Steps</label>
+          <input type="number" id="edit-steps" min="0" max="99999" placeholder="0" style="width:100%;padding:9px 11px;font-size:16px;font-weight:600;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;">
+        </div>
+        <div class="modal-field">
+          <label>Aid used</label>
+          <select id="edit-aid" style="width:100%;padding:9px 11px;font-size:14px;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;">
+            <option>Walker</option><option>Crutches</option><option>Cane</option><option>No aid</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Swelling</label>
+          <select id="edit-swelling" style="width:100%;padding:9px 11px;font-size:14px;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;">
+            <option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Exercises</label>
+          <div class="edit-check-grid" id="edit-exercises"></div>
+        </div>
+        <div class="modal-field">
+          <label>Notes</label>
+          <textarea id="edit-notes" style="width:100%;padding:9px 11px;font-size:13px;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;resize:vertical;min-height:64px;line-height:1.5;" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-delete" onclick="deleteLog()">Delete log</button>
+        <button class="btn-primary" style="margin-top:0" onclick="saveEditLog()">Save changes</button>
+      </div>
+    </div>
+  </div>
   </div><!-- end content -->
 
   <!-- TAB BAR -->
@@ -653,12 +718,23 @@ function renderPT(){
 function renderHistory(){
   var c=document.getElementById('history-list');
   if(!data.logs.length){c.innerHTML='<div class="empty-state">No logs yet.</div>';return;}
-  c.innerHTML=data.logs.slice(0,14).map(function(l){
+  c.innerHTML=data.logs.map(function(l){
     var d=new Date(l.date+'T00:00:00');
-    var ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    var il=data.iceLogs[l.date];
-    var iceInfo='';
-    return '<div class="history-item"><div><div class="history-date">'+ds+'</div><div class="history-meta">'+l.exercises.length+' exercises · '+l.swelling+' swelling'+iceInfo+'</div>'+(l.notes?'<div class="history-note">'+l.notes+'</div>':'')+'</div><div class="h-stats"><div class="h-stat"><span class="pain-badge" style="background:'+painColor(l.pain)+'">'+l.pain+'</span><span class="h-stat-lbl">pain</span></div><div class="h-stat"><span class="h-stat-val">'+Number(l.steps).toLocaleString()+'</span><span class="h-stat-lbl">steps</span></div></div></div>';
+    var ds=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    return '<div class="history-item" onclick="openEditModal(\''+l.date+'\')">'+
+      '<div>'+
+        '<div class="history-date">'+ds+'</div>'+
+        '<div class="history-meta">'+l.exercises.length+' exercises · '+l.swelling+' swelling</div>'+
+        (l.notes?'<div class="history-note">'+l.notes+'</div>':'')+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:10px">'+
+        '<div class="h-stats">'+
+          '<div class="h-stat"><span class="pain-badge" style="background:'+painColor(l.pain)+'">'+l.pain+'</span><span class="h-stat-lbl">pain</span></div>'+
+          '<div class="h-stat"><span class="h-stat-val">'+Number(l.steps).toLocaleString()+'</span><span class="h-stat-lbl">steps</span></div>'+
+        '</div>'+
+        '<span style="font-size:18px;color:var(--p300)">›</span>'+
+      '</div>'+
+    '</div>';
   }).join('');
 }
 
@@ -897,6 +973,86 @@ function renderCalDetail(dateStr){
 function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
 function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
 
+
+/* --- edit log modal --- */
+var EXERCISES_LIST=['Ankle pumps','Bicycling','Glutes machine','Quad machine','Hamstring machine','Short arc quads','Bridging','Heel slides','Prone knee flexion','Long arc quads','Heel and toe raises'];
+var editingDate=null;
+var editPain=0;
+
+function openEditModal(dateStr){
+  var log=data.logs.find(function(l){return l.date===dateStr;});
+  if(!log)return;
+  editingDate=dateStr;
+  editPain=log.pain;
+  var d=new Date(dateStr+'T00:00:00');
+  document.getElementById('edit-modal-title').textContent=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('edit-steps').value=log.steps||'';
+  document.getElementById('edit-aid').value=log.aid||'Walker';
+  document.getElementById('edit-swelling').value=log.swelling||'None';
+  document.getElementById('edit-notes').value=log.notes||'';
+  buildEditPainDots();
+  buildEditExercises(log.exercises||[]);
+  document.getElementById('edit-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeEditModal(e){
+  if(e&&e.target!==document.getElementById('edit-modal'))return;
+  document.getElementById('edit-modal').classList.remove('open');
+  document.body.style.overflow='';
+  editingDate=null;
+}
+
+function buildEditPainDots(){
+  var painColors={0:'#3B6D11',1:'#639922',2:'#639922',3:'#BA7517',4:'#BA7517',5:'#BA7517',6:'#E24B4A',7:'#E24B4A',8:'#E24B4A',9:'#A32D2D',10:'#A32D2D'};
+  document.getElementById('edit-pain-dots').innerHTML=Array.from({length:11},function(_,i){
+    var active=i===editPain;
+    var col=painColors[i];
+    return '<button class="edit-pain-dot'+(active?' active':'')+'" style="'+(active?'background:'+col+';border-color:transparent;color:white':'border-color:'+col+';color:'+col)+'" data-v="'+i+'" onclick="setEditPain('+i+')">'+i+'</button>';
+  }).join('');
+}
+
+function setEditPain(v){editPain=v;buildEditPainDots();}
+
+function buildEditExercises(checked){
+  document.getElementById('edit-exercises').innerHTML=EXERCISES_LIST.map(function(ex){
+    var isChecked=checked.indexOf(ex)>=0;
+    return '<label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-muted);cursor:pointer;padding:2px 0">'+
+      '<input type="checkbox" value="'+ex+'"'+(isChecked?' checked':'')+' style="width:15px;height:15px;accent-color:var(--p500);cursor:pointer;flex-shrink:0"> '+ex+'</label>';
+  }).join('');
+}
+
+function saveEditLog(){
+  if(!editingDate)return;
+  var exercises=[];
+  document.querySelectorAll('#edit-exercises input:checked').forEach(function(el){exercises.push(el.value);});
+  var idx=data.logs.findIndex(function(l){return l.date===editingDate;});
+  if(idx<0)return;
+  data.logs[idx]=Object.assign({},data.logs[idx],{
+    pain:editPain,
+    steps:+document.getElementById('edit-steps').value||0,
+    aid:document.getElementById('edit-aid').value,
+    swelling:document.getElementById('edit-swelling').value,
+    exercises:exercises,
+    notes:document.getElementById('edit-notes').value
+  });
+  save();
+  closeEditModal();
+  renderHistory();
+  renderMilestones();
+  updateBanner();
+}
+
+function deleteLog(){
+  if(!editingDate)return;
+  if(!confirm('Delete the log for this day? This cannot be undone.'))return;
+  data.logs=data.logs.filter(function(l){return l.date!==editingDate;});
+  save();
+  closeEditModal();
+  renderHistory();
+  renderMilestones();
+  updateBanner();
+}
 /* init */
 buildPainDots();
 updateSurgeryInfo();
