@@ -393,7 +393,10 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
 
     <!-- HISTORY SCREEN -->
     <div class="screen" id="screen-history">
-      <div class="section-label">Recent logs</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="section-label" style="margin-bottom:0">Recent logs</div>
+        <button onclick="openPastDayModal()" style="padding:6px 12px;background:var(--p100);border:0.5px solid var(--p200);border-radius:20px;font-size:12px;font-weight:600;color:var(--p700);cursor:pointer;font-family:inherit;">+ Log past day</button>
+      </div>
       <div id="history-list"><div class="empty-state">No logs yet. Start by logging today!</div></div>
 
       <div class="section-label mt-12">Recovery goals</div>
@@ -474,6 +477,54 @@ input:checked+.tog-slider:before{transform:translateX(18px);}
 
 
 
+
+  <!-- PAST DAY MODAL -->
+  <div class="modal-overlay" id="past-modal" onclick="closePastModal(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title">Log a past day</div>
+        <button class="modal-close" onclick="closePastModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label>Date</label>
+          <input type="date" id="past-date-input" style="width:100%;padding:9px 11px;font-size:14px;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;">
+        </div>
+        <div class="modal-field">
+          <label>Pain level</label>
+          <div class="edit-pain-grid" id="past-pain-dots"></div>
+        </div>
+        <div class="modal-field">
+          <label>Steps</label>
+          <input type="number" id="past-steps" min="0" max="99999" placeholder="0" style="width:100%;padding:9px 11px;font-size:16px;font-weight:600;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;">
+        </div>
+        <div class="modal-field">
+          <label>Aid used</label>
+          <select id="past-aid" style="width:100%;padding:9px 11px;font-size:14px;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;">
+            <option>Walker</option><option>Crutches</option><option>Cane</option><option>No aid</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Swelling</label>
+          <select id="past-swelling" style="width:100%;padding:9px 11px;font-size:14px;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;">
+            <option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Exercises</label>
+          <div class="edit-check-grid" id="past-exercises"></div>
+        </div>
+        <div class="modal-field">
+          <label>Notes</label>
+          <textarea id="past-notes" style="width:100%;padding:9px 11px;font-size:13px;border:0.5px solid var(--border-med);border-radius:10px;background:var(--p50);color:var(--text-main);font-family:inherit;resize:vertical;min-height:64px;line-height:1.5;" placeholder="Notes…"></textarea>
+        </div>
+      </div>
+      <div style="padding:0 16px 16px;">
+        <button class="btn-primary" onclick="savePastLog()">Save log</button>
+      </div>
+    </div>
+  </div>
   <!-- EDIT LOG MODAL -->
   <div class="modal-overlay" id="edit-modal" onclick="closeEditModal(event)">
     <div class="modal-sheet">
@@ -974,6 +1025,83 @@ function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalend
 function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
 
 
+
+/* --- past day modal --- */
+var pastPain=3;
+
+function openPastDayModal(){
+  pastPain=3;
+  // Default to yesterday
+  var yesterday=new Date();
+  yesterday.setDate(yesterday.getDate()-1);
+  document.getElementById('past-date-input').value=yesterday.toISOString().split('T')[0];
+  // Set max to yesterday
+  document.getElementById('past-date-input').max=yesterday.toISOString().split('T')[0];
+  document.getElementById('past-steps').value='';
+  document.getElementById('past-aid').value='Walker';
+  document.getElementById('past-swelling').value='None';
+  document.getElementById('past-notes').value='';
+  buildPastPainDots();
+  buildPastExercises([]);
+  document.getElementById('past-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closePastModal(e){
+  if(e&&e.target!==document.getElementById('past-modal'))return;
+  document.getElementById('past-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function buildPastPainDots(){
+  var painColors={0:'#3B6D11',1:'#639922',2:'#639922',3:'#BA7517',4:'#BA7517',5:'#BA7517',6:'#E24B4A',7:'#E24B4A',8:'#E24B4A',9:'#A32D2D',10:'#A32D2D'};
+  document.getElementById('past-pain-dots').innerHTML=Array.from({length:11},function(_,i){
+    var active=i===pastPain;
+    var col=painColors[i];
+    return '<button class="edit-pain-dot'+(active?' active':'')+'" style="'+(active?'background:'+col+';border-color:transparent;color:white':'border-color:'+col+';color:'+col)+'" onclick="setPastPain('+i+')">'+i+'</button>';
+  }).join('');
+}
+
+function setPastPain(v){pastPain=v;buildPastPainDots();}
+
+function buildPastExercises(checked){
+  document.getElementById('past-exercises').innerHTML=EXERCISES_LIST.map(function(ex){
+    var isChecked=checked.indexOf(ex)>=0;
+    return '<label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-muted);cursor:pointer;padding:2px 0">'+
+      '<input type="checkbox" value="'+ex+'"'+(isChecked?' checked':'')+' style="width:15px;height:15px;accent-color:var(--p500);cursor:pointer;flex-shrink:0"> '+ex+'</label>';
+  }).join('');
+}
+
+function savePastLog(){
+  var dateStr=document.getElementById('past-date-input').value;
+  if(!dateStr){alert('Please select a date.');return;}
+  var today=new Date().toISOString().split('T')[0];
+  if(dateStr>=today){alert('Use the Log tab for today.');return;}
+  var existing=data.logs.find(function(l){return l.date===dateStr;});
+  if(existing&&!confirm('A log already exists for this day. Overwrite it?'))return;
+  var exercises=[];
+  document.querySelectorAll('#past-exercises input:checked').forEach(function(el){exercises.push(el.value);});
+  var log={
+    date:dateStr,
+    pain:pastPain,
+    flexion:0,extension:0,
+    steps:+document.getElementById('past-steps').value||0,
+    aid:document.getElementById('past-aid').value,
+    swelling:document.getElementById('past-swelling').value,
+    exercises:exercises,
+    notes:document.getElementById('past-notes').value,
+    iceSessions:0,elevSessions:0
+  };
+  var idx=data.logs.findIndex(function(l){return l.date===dateStr;});
+  if(idx>=0)data.logs[idx]=log;else data.logs.push(log);
+  data.logs.sort(function(a,b){return b.date.localeCompare(a.date);});
+  save();
+  closePastModal();
+  renderHistory();
+  renderMilestones();
+  updateBanner();
+  alert('Log saved for '+new Date(dateStr+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric'}));
+}
 /* --- edit log modal --- */
 var EXERCISES_LIST=['Ankle pumps','Bicycling','Glutes machine','Quad machine','Hamstring machine','Short arc quads','Bridging','Heel slides','Prone knee flexion','Long arc quads','Heel and toe raises'];
 var editingDate=null;
